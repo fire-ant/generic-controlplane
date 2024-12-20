@@ -19,6 +19,7 @@ package options
 import (
 	"context"
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/google/uuid"
@@ -32,6 +33,7 @@ import (
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
+	"k8s.io/klog/v2"
 )
 
 const (
@@ -89,8 +91,20 @@ func (s *AdminAuthentication) AddFlags(fs *pflag.FlagSet) {
 // It also returns a new shard admin token and its hash if the configured shard admin hash file is not present.
 // If the shard admin hash file is present only the shard admin hash is returned and the returned shard admin token is empty.
 func (s *AdminAuthentication) ApplyTo(config *genericapiserver.Config) (volatileGcpAdminToken, volatileUserToken string, err error) {
-	volatileUserToken = uuid.New().String()
-	volatileGcpAdminToken = uuid.New().String()
+
+	if os.Getenv("ADMIN_BOOTSTRAP_TOKEN") != "" {
+		klog.Info("Using ADMIN_BOOTSTRAP_TOKEN for admin token")
+		volatileGcpAdminToken = os.Getenv("ADMIN_BOOTSTRAP_TOKEN")
+	} else {
+		volatileGcpAdminToken = uuid.New().String()
+	}
+
+	if os.Getenv("USER_BOOTSTRAP_TOKEN") != "" {
+		klog.Info("Using USER_BOOTSTRAP_TOKEN for user token")
+		volatileUserToken = os.Getenv("USER_BOOTSTRAP_TOKEN")
+	} else {
+		volatileUserToken = uuid.New().String()
+	}
 
 	gcpAdminUser := &user.DefaultInfo{
 		Name: gcpAdminUserName,
