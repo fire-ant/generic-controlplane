@@ -80,7 +80,7 @@ LDFLAGS := \
 	-X k8s.io/component-base/version.gitMajor=${KUBE_MAJOR_VERSION} \
 	-X k8s.io/component-base/version.gitMinor=${KUBE_MINOR_VERSION} \
 	-X k8s.io/component-base/version.buildDate=${BUILD_DATE} \
-	-extldflags '-static'
+	-extldflags '-static' -w -s
 all: build
 .PHONY: all
 
