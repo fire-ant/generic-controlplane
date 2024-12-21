@@ -1,4 +1,4 @@
-module github.com/fire-ant/generic-controlplane
+module github.com/kcp-dev/generic-controlplane
 
 go 1.22.2
 
